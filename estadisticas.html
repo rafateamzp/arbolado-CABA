@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resumen estadístico - Arbolado CABA</title>
+  
+  <!-- Estilos propios -->
+  <link rel="stylesheet" href="estilos.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- SUPABASE JS (IMPORTANTE: Debe estar en el HEAD) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Fuente -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Roboto', sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; }
+    header { text-align: center; margin-bottom: 30px; }
+    h1 { color: #2c3e50; margin-bottom: 10px; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; max-width: 1400px; margin: 0 auto; }
+    .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.2s; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+    .card h3 { margin-top: 0; color: #34495e; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; font-size: 1.2rem; }
+    .chart-container { position: relative; height: 300px; width: 100%; }
+    .stats-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; max-width: 1400px; margin-left: auto; margin-right: auto; }
+    .stat-card { background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .stat-card:nth-child(2) { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+    .stat-card:nth-child(3) { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+    .stat-card:nth-child(4) { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+    .stat-number { font-size: 2.5rem; font-weight: bold; display: block; margin-bottom: 5px; }
+    .stat-label { font-size: 0.9rem; opacity: 0.9; }
+    .loading { text-align: center; padding: 50px; font-size: 1.2rem; color: #7f8c8d; }
+    .back-btn { display: inline-block; margin-bottom: 20px; padding: 7px 14px; background-color: #3498db; color: white; text-decoration: none; border-radius: 6px; transition: background 0.3s; }
+    .back-btn:hover { background-color: #2980b9; }
+    @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .stats-summary { grid-template-columns: 1fr; } }
+  </style>
+</head>
+
+<body>
+  <a href="index.html" class="back-btn">← Volver al Mapa</a>
+  
+                <!-- Cafecito -->
+                <a href="https://cafecito.app/geckogis"
+        rel="noopener"
+        target="_blank"
+        style="padding: 7px 14px;
+                background: #131312;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 12px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                transition: all 0.3s;
+                display: inline-block;">
+        ☕ Cafecito
+        </a>
+    
+
+  <header>
+    <h1>Resumen estadístico del Arbolado Urbano lineal 2017-2018 📊</h1>
+        <p style="max-width: 700px; margin: 0 auto; color:#7f8c8d; font-size:0.95rem;">
+        Tablero basado en el relevamiento de arbolado lineal de CABA (2017–2018)</p> 
+        <p style="max-width: 700px; margin: 0 auto; color:#7f8c8d; font-size:0.95rem;">Los gráficos muestran la distribución por especies, altura, diámetro y comuna
+        </p>
+  </header>
+
+  <!-- Tarjetas de Resumen -->
+  <div class="stats-summary" id="stats-summary">
+    <div class="loading">Cargando datos...</div>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="dashboard-grid">
+    <!-- Gráfico 1: Top 10 Especies -->
+    <div class="card">
+      <h3>Top 10 especies más comunes</h3>
+      <div class="chart-container">
+        <canvas id="chartEspecies"></canvas>
+      </div>
+    </div>
+
+    <!-- Gráfico 2: Distribución por altura -->
+    <div class="card">
+      <h3>Distribución por altura <small>(metros)</small></h3>
+      <div class="chart-container">
+        <canvas id="chartAltura"></canvas>
+      </div>
+    </div>
+
+    <!-- Gráfico 3: Distribución por diámetro -->
+    <div class="card">
+      <h3>Distribución por diámetro <small>(DAP - centímetros)</small></h3>
+      <div class="chart-container">
+        <canvas id="chartDiametro"></canvas>
+      </div>
+    </div>
+
+    <!-- Gráfico 4: Árboles por comuna -->
+    <div class="card">
+      <h3>Cantidad de árboles por comuna</h3>
+      <div class="chart-container">
+        <canvas id="chartComunas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lógica JS -->
+  <script>
+    // ============================================================================
+    // 1. CONFIGURACIÓN Y VERIFICACIÓN
+    // ============================================================================
+
+    // Helper genérico de retry
+    async function fetchWithRetry(fn, maxRetries = 2, delayMs = 800) {
+      let attempt = 0;
+      while (true) {
+        const res = await fn();
+        if (!res.error) return res;
+
+        console.warn(`⚠️ Supabase RPC error (intento ${attempt + 1}):`, res.error);
+
+        if (attempt >= maxRetries) return res;
+        attempt++;
+        await new Promise(r => setTimeout(r, delayMs));
+      }
+    }
+
+    // Colores por especie (ajustá nombres según tu dataset)
+    const COLOR_POR_ESPECIE = {
+      'Tipuana tipu': 'rgba(255, 107, 107, 0.8)',
+      'Platanus x hispanica': 'rgba(52, 152, 219, 0.8)',
+      'Platanus x acerifolia': 'rgba(83, 104, 225, 0.8)',
+      'Jacaranda mimosifolia': 'rgba(158, 93, 184, 0.8)',
+      'Fraxinus pennsylvanica': 'rgba(78, 205, 196, 0.8)',
+      'Melia azedarach': 'rgba(221, 213, 60, 0.8)',
+      'Tilia x moltkei': 'rgba(52, 152, 219, 0.8)',
+      'Lagerstroemia indica': 'rgba(60, 221, 95, 0.8)',
+      'Ficus benjamina': 'rgba(39, 174, 96, 0.8)',
+      'Fraxinus americana': 'rgba(143, 60, 221, 0.8)'
+      // agregá acá otras especies que quieras colorear fijo
+    };
+
+    function getColoresPorEspecie(labelsEspecies) {
+      const defaultColors = [
+        'rgba(52, 152, 219, 0.8)',
+        'rgba(46, 204, 113, 0.8)',
+        'rgba(231, 76, 60, 0.8)',
+        'rgba(155, 89, 182, 0.8)',
+        'rgba(241, 196, 15, 0.8)',
+        'rgba(26, 188, 156, 0.8)',
+        'rgba(52, 73, 94, 0.8)',
+        'rgba(127, 140, 141, 0.8)',
+        'rgba(243, 156, 18, 0.8)',
+        'rgba(39, 174, 96, 0.8)'
+      ];
+
+      return labelsEspecies.map((nombre, idx) => {
+        if (COLOR_POR_ESPECIE[nombre]) return COLOR_POR_ESPECIE[nombre];
+        return defaultColors[idx % defaultColors.length];
+      });
+    }
+
+    function getBordesPorEspecie(labelsEspecies) {
+      return getColoresPorEspecie(labelsEspecies).map(c =>
+        c.replace('0.8', '1')
+      );
+    }
+
+    if (typeof window.supabase === 'undefined') {
+      document.getElementById('stats-summary').innerHTML = 
+        '<div style="color: red; text-align: center; padding: 50px;">Error: No se cargó Supabase.</div>';
+    } else {
+      const SUPABASE_URL = 'https://kmbdzghjyktbavokbkmy.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttYmR6Z2hqeWt0YmF2b2tia215Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1NzQ2NDYsImV4cCI6MjA5NDE1MDY0Nn0.Mq-Z-m9kvAiiFHMBp-rqRgBblUm7T7TBzbS3CSwvIc0';
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      let chartEspeciesInstance = null;
+      let chartAlturaInstance = null;
+      let chartDiametroInstance = null;
+      let chartComunasInstance = null;
+
+      // ============================================================================
+      // 2. CARGA DE DATOS AGREGADOS
+      // ============================================================================
+      async function cargarEstadisticas() {
+        const summaryEl = document.getElementById('stats-summary');
+        try {
+          console.log("📡 Solicitando estadísticas agregadas a Supabase...");
+
+          summaryEl.innerHTML = '<div class="loading">Cargando datos estadísticos...</div>';
+
+          const [
+            resumenRes,
+            especiesRes,
+            alturaRes,
+            diametroRes,
+            comunasRes
+          ] = await Promise.all([
+            fetchWithRetry(() => supabase.rpc('get_resumen_general')),
+            fetchWithRetry(() => supabase.rpc('get_estadisticas_especies')),
+            fetchWithRetry(() => supabase.rpc('get_estadisticas_altura')),
+            fetchWithRetry(() => supabase.rpc('get_estadisticas_diametro')),
+            fetchWithRetry(() => supabase.rpc('get_arboles_por_comuna'))
+          ]);
+
+          if (resumenRes.error) throw resumenRes.error;
+          if (especiesRes.error) throw especiesRes.error;
+          if (alturaRes.error) throw alturaRes.error;
+          if (diametroRes.error) throw diametroRes.error;
+          if (comunasRes.error) throw comunasRes.error;
+
+          const resumen = (resumenRes.data && resumenRes.data[0]) ? resumenRes.data[0] : {
+            total_arboles: 0,
+            con_altura: 0,
+            con_diametro: 0,
+            sin_identificar: 0
+          };
+          let especies = especiesRes.data || [];
+          const altura = alturaRes.data || [];
+          const diametro = diametroRes.data || [];
+          const comunas = comunasRes.data || [];
+
+          console.log("✅ Datos de estadísticas recibidos correctamente.");
+
+          // Top 10 especies ordenadas
+          especies.sort((a, b) => b.cantidad - a.cantidad);
+          const top10 = especies.slice(0, 10);
+          const labelsEspecies = top10.map(e => e.especie);
+          const dataEspecies = top10.map(e => e.cantidad);
+
+          // Datos para comunas (orden ascendente según SQL)
+          const labelsComunas = comunas.map(c => c.comuna_nombre || `Comuna ${c.comuna_id}`);
+          const dataComunas = comunas.map(c => c.cantidad);
+
+          // Renderizar todo
+          renderResumen(resumen);
+          renderChartEspecies(labelsEspecies, dataEspecies);
+          renderChartAltura(altura.map(h => h.rango), altura.map(h => h.cantidad));
+          renderChartDiametro(diametro.map(d => d.rango), diametro.map(d => d.cantidad));
+          renderChartComunas(labelsComunas, dataComunas);
+
+        } catch (error) {
+          console.error('❌ Error al cargar estadísticas:', error);
+          summaryEl.innerHTML = `
+            <div style="color: red; text-align: center; padding: 30px;">
+              <h3>No se pudieron cargar las estadísticas</h3>
+              <p>Puede deberse a un problema momentáneo en la base de datos. Intentá recargar esta página en unos segundos.</p>
+            </div>
+          `;
+        }
+      }
+
+      // ============================================================================
+      // 3. RENDERIZADO
+      // ============================================================================
+      function renderResumen(data) {
+        const resumenHTML = `
+          <div class="stat-card">
+            <span class="stat-number">${data.total_arboles.toLocaleString()}</span>
+            <span class="stat-label">Total Árboles</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">${data.con_altura.toLocaleString()}</span>
+            <span class="stat-label">Con Altura</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">${data.con_diametro.toLocaleString()}</span>
+            <span class="stat-label">Con Diámetro</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">${data.sin_identificar.toLocaleString()}</span>
+            <span class="stat-label">Sin Identificar</span>
+          </div>
+        `;
+        document.getElementById('stats-summary').innerHTML = resumenHTML;
+      }
+
+      function renderChartEspecies(labels, data) {
+        const ctx = document.getElementById('chartEspecies').getContext('2d');
+        const backgroundColors = getColoresPorEspecie(labels);
+        const borderColors = getBordesPorEspecie(labels);
+
+        chartEspeciesInstance = new Chart(ctx, {
+          type: 'bar',
+          data: { 
+            labels: labels, 
+            datasets: [{ 
+              label: 'Cantidad de Árboles', 
+              data: data, 
+              backgroundColor: backgroundColors,
+              borderColor: borderColors,
+              borderWidth: 1 
+            }] 
+          },
+          options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { legend: { display: false } }, 
+            scales: { y: { beginAtZero: true } } 
+          }
+        });
+      }
+
+      function renderChartAltura(labels, data) {
+        const ctx = document.getElementById('chartAltura').getContext('2d');
+        chartAlturaInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: { 
+            labels: labels, 
+            datasets: [{ 
+              data: data, 
+              backgroundColor: ['#3498db', '#2ecc71', '#f1c40f', '#e67e22', '#e74c3c', '#95a5a6'], 
+              hoverOffset: 4 
+            }] 
+          },
+          options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { legend: { position: 'bottom' } } 
+          }
+        });
+      }
+
+      function renderChartDiametro(labels, data) {
+        const ctx = document.getElementById('chartDiametro').getContext('2d');
+        chartDiametroInstance = new Chart(ctx, {
+          type: 'pie',
+          data: { 
+            labels: labels, 
+            datasets: [{ 
+              data: data, 
+              backgroundColor: ['#9b59b6', '#34495e', '#16a085', '#27ae60', '#2980b9', '#95a5a6'], 
+              hoverOffset: 4 
+            }] 
+          },
+          options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { legend: { position: 'bottom' } } 
+          }
+        });
+      }
+
+      function renderChartComunas(labels, data) {
+    const ctx = document.getElementById('chartComunas').getContext('2d');
+    chartComunasInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+        labels: labels,
+        datasets: [{
+            label: 'Cantidad de árboles',
+            data: data,
+            backgroundColor: 'rgba(46, 204, 113, 0.7)',
+            borderColor: 'rgba(39, 174, 96, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Comuna' },
+          ticks: {
+            autoSkip: false,      // mostrar todas
+            maxRotation: 45,      // rotar 45 grados
+            minRotation: 45,
+            font: {
+              size: 11           // un poco más chico
+            }
+          }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: 'Cantidad de árboles' }
+        }
+      }
+    }
+  });
+}
+
+      // Iniciar
+      window.onload = cargarEstadisticas;
+    }
+  </script>
+</body>
+</html>

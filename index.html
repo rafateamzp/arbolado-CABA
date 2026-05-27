@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob: filesystem:;">
+    <title>Visor de Arbolado Urbano - CABA</title>
+        
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.1/dist/MarkerCluster.Default.css" />
+    
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Tus estilos -->
+    <link rel="stylesheet" href="estilos.css">
+</head>
+
+<body>
+    <h2>🌳 Visor de Arbolado Urbano CABA<br></h2>
+    
+    <!-- Barra de Búsqueda y Filtro -->
+<div class="buscador-container">
+  <div class="buscador-input-wrapper">
+    <!-- Filtro por especie -->
+    <select id="filtro-especie" class="filtro-select">
+      <option value="">Todas las especies</option>
+    </select>
+
+    <!-- Línea: búsqueda por especie -->
+    <div class="buscador-fila">
+      <input id="input-busqueda-especie"
+             placeholder="Buscar por especie (nombre común o científico)" />
+      <button id="btn-buscar-especie">Buscar especie</button>
+    </div>
+
+    <!-- Línea: búsqueda por dirección -->
+    <div class="buscador-fila">
+      <input id="input-busqueda-direccion"
+             placeholder="Buscar por dirección" />
+      <button id="btn-buscar-direccion">Buscar dirección</button>
+    </div>
+  </div>
+
+  <div id="resultados-busqueda" class="lista-resultados"></div>
+</div>
+
+    <!-- Botones de Acción -->
+<div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+    <button id="btn-theme-toggle" 
+        class="btn-theme-toggle" 
+        title="Cambiar tema">
+  🌙 Modo oscuro
+    </button>
+    <button id="btn-limpiar" title="Limpiar búsqueda" style="padding: 7px 14px; background: #95a5a6; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s;">❌ Limpiar</button>
+    <button id="btn-reset-mapa" title="Reiniciar vista del mapa" style="padding: 7px 14px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s;">🔄 Vista inicial</button>
+    <a href="estadisticas.html" class="btn-estadisticas" title="Análisis de datos" style="padding: 7px 14px; background: #2ecc71; color: white; text-decoration: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s; display: inline-block;">📊 Estadísticas</a>
+    <button id="btn-heatmap" title="Mapa de calor" style="padding: 7px 14px; background: #e74c3c; color: white; border: none; border-radius: 5px； cursor： pointer； font-weight： bold； font-size： 12px； box-shadow： 0 2px 4px rgba(0,0,0,0.1)； transition：    all 0.3s;">🔥 Mapa de calor</button>
+    <a href="https://cafecito.app/geckogis"
+   rel="noopener"
+   target="_blank"
+   style="padding: 7px 14px;
+          background: #131312;
+          color: white;
+          text-decoration: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-weight: bold;
+          font-size: 12px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          transition: all 0.3s;
+          display: inline-block;">
+  ☕ Cafecito
+</a>
+</div>
+
+    <div class="contenedor-principal">
+        <div id="contenedor_de_mapa"></div>
+    </div>
+
+    <!-- 1. Leaflet JS (Base) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- 2. MarkerCluster JS (Depende de Leaflet) -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.1/dist/leaflet.markercluster.js"></script>
+    
+    <!-- 3. Leaflet Heat JS (Depende de Leaflet y debe ir DESPUÉS) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
+    
+    <!-- 4. Tu script principal -->
+    <script src="index.js"></script>
+
+    <!-- Pantalla de Bienvenida / Instrucciones -->
+    <div id="modal-instrucciones" class="modal-overlay">
+        <div class="modal-contenido">
+            <div class="modal-header">
+                <h2>🌳 Visor de Arbolado Urbano - CABA</h2>
+                <button id="btn-cerrar-modal" class="btn-cerrar">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>Bienvenido al visor interactivo del arbolado de la Ciudad de Buenos Aires.</p>
+                <p>Fuente : Dataset Arbolado público lineal CABA 2017-2018.</p>
+                <p>Datos disponibles en <a href="https://data.buenosaires.gob.ar/dataset/arbolado-publico-lineal" target="_blank" style="color: #3498db; text-decoration: none; font-weight: bold;">Buenos Aires Data</a>.</p>
+                    
+                <h3>🔍 Cómo usar este mapa:</h3>
+                <ul>
+                    <li><strong>Explorar:</strong> Al cargar, verás árboles agrupandose dinamicamente en clusters. Haz zoom para ver + detalles.</li>
+                    <li><strong>Filtrar por Especie:</strong> Usa el menú desplegable para seleccionar una especie por su nombre científico.</li>
+                    <li><strong>Filtrar por nombre común:</strong> Tambien puedes hacer busqueda por su nombre común.</li>
+                    <li><strong>Buscar por Dirección:</strong> Escribe una calle (ej: "Av. Cabildo") en la barra correspondiente.</li>
+                    <li><strong>Información:</strong> Haz clic en cualquier marcador para ver + detalles.</li>
+                    <li><strong>Mapa de Calor:</strong> Usa el botón "Ver Mapa de calor 🔥" que muestra las zonas con mayor concentración de árboles.</li>
+                    <li><strong>Estadísticas:</strong> Accede al tablero para ver datos completos.</li>
+                    <li><strong>Importante:</strong> Solo se muestra arbolado <strong>lineal</strong>. En esta version <strong>no</strong> están incluidos parques, plazas, areas verdes.</li>
+                </ul>
+                
+                <p class="nota-footer">
+                    <br>Proyecto desarrollado por GeckoGIS para fines educativos y comunitarios.</small>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-empezar" class="btn-accion">¡Empezar a explorar!</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
