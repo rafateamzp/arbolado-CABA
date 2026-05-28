@@ -9,7 +9,7 @@ Permite visualizar la distribución de especies, alturas, diámetros y comunas, 
 ## Demo
 
 - URL de la aplicación: https://arboles-caba.netlify.app/
-- Repositorio: **este repo**
+- Repositorio: **https://github.com/rafateamzp/arbolado-CABA**
 
 > Datos de arbolado urbano lineal 2017–2018 publicados por el GCBA (Gobierno de la Ciudad de Buenos Aires).
 
