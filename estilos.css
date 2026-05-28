@@ -7,8 +7,23 @@ body {
     color: #333;
 }
 
+.titulo-boton {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.titulo-boton:hover {
+  opacity: 0.8;
+}
+
+.titulo-boton:active {
+  opacity: 0.5;
+}
+
 h2 {
-    color: #101b00;
+    color: #13a10e;
+    border-bottom: 1.5px solid #13a10e;
+    padding-bottom: 3px;
     text-align: center;
     margin: 8px 0 12px 0;
     font-size: 1.3rem;
@@ -74,28 +89,29 @@ h2 {
 .buscador-input-wrapper {
     display: flex;
     flex-wrap: wrap;
-    gap: 2px;
+    gap: 0px;
     background: white;
-    padding: 8px;
-    border-radius: 6px;
+    padding: 0px;
+    border-radius: 2px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    border: 1px solid #e0e0e0;
+    border: 2px solid #e0e0e0;
+    overflow: hidden;
 }
 
 #input-busqueda, #input-busqueda-especie, #input-busqueda-direccion {
     flex: 1;
-    border: 1px solid #ddd;
+    border: none;
     outline: none;
     font-size: 13px;
-    padding: 6px 10px;
-    border-radius: 4px;
+    padding: 6px 8px;
+    border-radius: 0px;
     min-width: 150px;
 }
 
 #btn-buscar, #btn-limpiar, #btn-buscar-especie, #btn-buscar-direccion {
     padding: 6px 12px;
     border: none;
-    border-radius: 4px;
+    border-radius: 0px;
     cursor: pointer;
     font-weight: bold;
     font-size: 12px;
@@ -192,8 +208,11 @@ h2 {
 
 .buscador-fila {
     display: flex;
-    gap: 6px;
+    gap: 0px;
     align-items: center;
+    flex: 1;
+    min-width: 0;
+    margin: 0;
 }
 /* Estilos del Modal de Bienvenida */
 .modal-overlay {
@@ -568,7 +587,7 @@ body, html {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 10;
 }
 
 .buscador-fila {

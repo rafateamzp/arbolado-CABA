@@ -226,6 +226,6 @@ Se recomienda que quienes prueben la beta reporten problemas en resoluciones peq
 
 Proyecto desarrollado por **[Rafael Alfonzo Zerpa D. / GeckoGIS]**.  
 
-- Sitio / portfolio: [https://github.com/rafateamzp]  
+- Sitio / portfolio: https://github.com/rafateamzp
 - Contacto: email: rafaelzerpa@proton.me / LinkedIn : www.linkedin.com/in/rafael-alfonzo-zerpa  
 - Cafecito: https://cafecito.app/geckogis
