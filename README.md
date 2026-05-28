@@ -18,7 +18,7 @@ Permite visualizar la distribución de especies, alturas, diámetros y comunas, 
 ## Características principales
 
 - 🌍 **Mapa interactivo** (Leaflet)  
-  - Clusters de árboles para mejorar rendimiento.  
+  - Clusters de árboles para mejorar rendimiento. Se cargan hasta 20.000 registros.
   - Íconos coloreados por especie.  
   - Popups con información básica (nombre común, nombre científico, altura, diámetro, comuna, dirección).
 
@@ -79,7 +79,7 @@ cd TU_REPO
 
 ### Configuración de Supabase
 
-Este proyecto usa un proyecto de Supabase existente con:
+Este desarrollo usa un proyecto de Supabase existente con:
 
 - Tabla principal `arbolado` con campos como `lat`, `long`, `nombre_cie`, `nombre_comun`, `altura_arb`, `diametro_a`, `comuna_id`.  
 - Funciones RPC:
@@ -125,18 +125,18 @@ const SUPABASE_ANON_KEY = '...';
 - **Búsqueda por dirección**:
   - Escribir parte de la dirección (por ejemplo “Av. Rivadavia 1000”).
 - **Limpiar búsqueda**:
-  - Botón “✕ Limpiar” restablece el mapa a clusters generales.
+  - Botón “✕ Limpiar” restablece el mapa a clusters generales removiendo la busqueda realizada previamente.
 
 ### Funciones avanzadas
 
 - **Mapa de calor**:
   - Botón “🔥 Mapa de calor” para activar/ocultar.
-  - Muestra densidad de arbolado a partir de una muestra de registros (para evitar sobrecargar el mapa).
+  - Muestra densidad de arbolado a partir de una muestra de registros (para evitar sobrecargar el mapa), indicando mediante gradiente de colores las zonas mas o menos arboladas.
 
 - **Estadísticas**:
   - Botón “📊 Estadísticas” abre `estadisticas.html`, con gráficos de:
     - Top 10 especies.
-    - Distribución por altura y DAP.
+    - Distribución por altura y diametro a la altura del pecho (DAP).
     - Árboles por comuna.
 
 - **Tema claro / oscuro**:
@@ -226,6 +226,6 @@ Se recomienda que quienes prueben la beta reporten problemas en resoluciones peq
 
 Proyecto desarrollado por **[Rafael Alfonzo Zerpa D. / GeckoGIS]**.  
 
-- Sitio / portfolio: [ENLACE]  
-- Contacto: email: rafaelzerpa@proton.me / LinkedIn : ]  
+- Sitio / portfolio: [https://github.com/rafateamzp]  
+- Contacto: email: rafaelzerpa@proton.me / LinkedIn : www.linkedin.com/in/rafael-alfonzo-zerpa  
 - Cafecito: https://cafecito.app/geckogis
