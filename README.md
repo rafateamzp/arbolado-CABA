@@ -146,9 +146,6 @@ const SUPABASE_ANON_KEY = '...';
 - **Vista del mapa**:
   - Botón “🗺️ Vista clara / oscura” alterna entre base light (CartoDB Positron) y base dark (CartoDB Dark Matter).[web:214]
 
-- **Cafecito**:
-  - Botón “☕ Cafecito” abre la página de donaciones en `https://cafecito.app/geckogis`.
-
 ---
 
 ## Esquema de datos (resumen)
@@ -208,17 +205,18 @@ Se recomienda que quienes prueben la beta reporten problemas en resoluciones peq
 
 ## Roadmap / ideas futuras
 
-- Filtros adicionales (por altura / diámetro / comuna).  
+- Filtros adicionales (por altura / diámetro / comuna). 
+- Inclusion del arbolado relevado en areas verdes, parques, plazas, jardines.  
 - Series temporales (si se incorporan nuevas campañas de relevamiento).  
 - Modo “historia” con recorridos guiados.  
 - Descarga de subconjuntos de datos (CSV / GeoJSON) con filtros aplicados.
 
 ---
 
-## Licencia
+## Licencias
 
-- Código: **[elige MIT / GPL / otra licencia]**.  
-- Datos: según licencia de publicación del GCBA (citá la fuente oficial).
+- Código: **[CC BY-SA 4.0]**.  
+- Datos: según licencia de publicación del GCBA **[CC BY 2.5 AR]**.
 
 ---
 
