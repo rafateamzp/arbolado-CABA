@@ -277,7 +277,7 @@ async function cargarClusters() {
   }
 }
 
-// Helper genérico de retry (podés dejarlo arriba en el archivo y reutilizarlo)
+// Helper genérico de retry
 async function fetchWithRetry(fn, maxRetries = 2, delayMs = 800) {
   let attempt = 0;
   while (true) {
@@ -676,7 +676,7 @@ if (btnResetMapa) {
 }
 
 // ============================================================================
-// 11. CONTROL DEL MODAL
+// 11. CONTROL DEL MODAL DE BIENVENIDA EINSTRUCCIONES
 // ============================================================================
 document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('modal-instrucciones');
@@ -732,7 +732,7 @@ function inicializarToggleBase() {
   });
 }
 
-// Sincronizar base con tema oscuro (llamado desde el botón de tema)
+// Sincronización de la base con tema oscuro (llamado desde el botón de tema)
 function sincronizarBaseConTema(isDark) {
   const btnBase = document.getElementById('btn-base-toggle');
   if (isDark && currentBase === 'light') {

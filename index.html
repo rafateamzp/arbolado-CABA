@@ -15,7 +15,7 @@
     <!-- Librería de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- Tus estilos -->
+    <!-- Estilos -->
     <link rel="stylesheet" href="estilos.css">
 </head>
 
@@ -25,21 +25,22 @@
     </h2>
     
     <!-- Barra de Búsqueda y Filtro -->
-<div class="buscador-container">
-  <div class="buscador-input-wrapper">
+    <div class="buscador-container">
+    <div class="buscador-input-wrapper">
+
     <!-- Filtro por especie -->
     <select id="filtro-especie" class="filtro-select">
       <option value="">Todas las especies</option>
     </select>
 
-    <!-- Línea: búsqueda por especie -->
+    <!-- Búsqueda por especie -->
     <div class="buscador-fila">
       <input id="input-busqueda-especie"
              placeholder="Buscar por especie (nombre común o científico)" />
       <button id="btn-buscar-especie">Buscar especie</button>
     </div>
 
-    <!-- Línea: búsqueda por dirección -->
+    <!-- Búsqueda por dirección -->
     <div class="buscador-fila">
       <input id="input-busqueda-direccion"
              placeholder="Buscar por dirección" />
@@ -76,10 +77,10 @@
     <!-- 3. Leaflet Heat JS (Depende de Leaflet y debe ir DESPUÉS) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
     
-    <!-- 4. Tu script principal -->
+    <!-- 4. Script principal -->
     <script src="index.js"></script>
 
-    <!-- Pantalla de Bienvenida / Instrucciones -->
+    <!-- Pantalla de Bienvenida / Instrucciones de uso-->
     <div id="modal-instrucciones" class="modal-overlay">
         <div class="modal-contenido">
             <div class="modal-header">

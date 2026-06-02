@@ -54,7 +54,7 @@ h2 {
 
 /* Overlay de carga */
 #loading-overlay {
-    /* Estilos definidos en JS, pero aseguramos visibilidad */
+    /* Estilos definidos en JS */
     z-index: 99999;
 }
 
@@ -214,7 +214,7 @@ h2 {
     min-width: 0;
     margin: 0;
 }
-/* Estilos del Modal de Bienvenida */
+/* Estilos del Modal de Bienvenida e instrucciones*/
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -222,7 +222,7 @@ h2 {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.7);
-    z-index: 10000; /* Por encima de todo */
+    z-index: 10000; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -551,7 +551,7 @@ body, html {
     border-color: #219150;
 }
 
-/* --- Estilos para el botón de Heatmap (NUEVO) --- */
+/* --- Estilos para el botón de Heatmap --- */
 #btn-heatmap {
     background-color: #e74c3c; /* Rojo inicial */
     color: white;

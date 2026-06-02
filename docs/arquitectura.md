@@ -5,7 +5,7 @@
 El proyecto está compuesto por:
 
 - Una aplicación web estática (HTML, CSS, JS) con Leaflet y Chart.js.  
-- Un backend gestionado por Supabase (Postgres + funciones RPC + RLS).[web:215][web:217]
+- Un backend gestionado por Supabase (Postgres + funciones RPC + RLS).
 
 ```text
 Usuario ── navegador ── Leaflet / Chart.js ── Supabase JS ── Postgres
@@ -69,7 +69,7 @@ Ejemplos de funciones utilizadas desde el frontend:
 
 ### Seguridad (RLS)
 
-- RLS habilitado en tablas públicas (`arbolado` y otras que contengan datos usados).[web:215][web:223]  
+- RLS habilitado en tablas públicas (`arbolado` y otras que contengan datos usados) 
 - Políticas:
 
   - `SELECT`: permitida para rol `anon` (lectura pública).  

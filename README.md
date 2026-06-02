@@ -8,7 +8,7 @@ Permite visualizar la distribución de especies, alturas, diámetros y comunas, 
 
 ## Demo
 
-- URL de la aplicación: https://arboles-caba.netlify.app/
+- URL de la aplicación: **https://arboles-caba.netlify.app/**
 - Repositorio: **https://github.com/rafateamzp/arbolado-CABA**
 
 > Datos de arbolado urbano lineal 2017–2018 publicados por el GCBA (Gobierno de la Ciudad de Buenos Aires).
@@ -23,9 +23,9 @@ Permite visualizar la distribución de especies, alturas, diámetros y comunas, 
   - Popups con información básica (nombre común, nombre científico, altura, diámetro, comuna, dirección).
 
 - 🔍 **Búsqueda y filtros**  
-  - Búsqueda por nombre común / científico.  
+  - Búsqueda por nombre común ó científico.  
   - Búsqueda por dirección.  
-  - Filtro por listado de especies.
+  - Filtro por listado de especies mas frecuentes.
   
 
 - 🔥 **Mapa de calor (heatmap)**  
@@ -51,15 +51,15 @@ Permite visualizar la distribución de especies, alturas, diámetros y comunas, 
 ## Stack tecnológico
 
 - **Frontend**
-  - [Leaflet](https://leafletjs.com/) para el mapa.[web:214]
+  - [Leaflet](https://leafletjs.com/) para el mapa.
   - [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster) para clusters.
   - [Leaflet.heat](https://github.com/Leaflet/Leaflet.heat) para mapa de calor.
-  - [Chart.js](https://www.chartjs.org/) para los gráficos del dashboard.[web:180][web:193]
+  - [Chart.js](https://www.chartjs.org/) para los gráficos del dashboard.
 
 - **Backend / Datos**
-  - [Supabase](https://supabase.com/) (Postgres + Auth + Storage).[web:215][web:217]
+  - [Supabase](https://supabase.com/) (Postgres + Auth + Storage).
   - Funciones RPC para estadísticas agregadas y muestra de puntos para el heatmap.
-  - Row Level Security (RLS) activado con políticas de solo lectura para el rol `anon`.[web:215][web:223]
+  - Row Level Security (RLS) activado con políticas de solo lectura para el rol `anon`.
 
 ---
 
@@ -67,14 +67,14 @@ Permite visualizar la distribución de especies, alturas, diámetros y comunas, 
 
 ### Requisitos
 
-- Navegador moderno (Chrome, Firefox, Edge, etc.).  
+- Navegador moderno (Chrome, Firefox, Edge, Brave, etc.).  
 - Opcional: un servidor HTTP estático (por ejemplo `live-server`, `http-server`, o el servidor de VS Code).
 
 ### Clonar el repositorio
 
 ```bash
-git clone https://github.com/TU_USUARIO/TU_REPO.git
-cd TU_REPO
+git clone https://github.com/tu_usuario/tu_repo.git
+cd tu_repo
 ```
 
 ### Configuración de Supabase
@@ -98,7 +98,7 @@ const SUPABASE_ANON_KEY = '...';
 ```
 
 > Nota: El `anon key` de Supabase es una clave **pública** pensada para usarse en el frontend.  
-> La seguridad se implementa con RLS y políticas de solo lectura.[web:224][web:222]
+> La seguridad se implementa con RLS y políticas de solo lectura.
 
 ### Ejecutar localmente
 
@@ -121,7 +121,7 @@ const SUPABASE_ANON_KEY = '...';
 
 - **Búsqueda por especie**:
   - Escribir nombre común o científico en la caja de búsqueda de especie.
-  - Usar el filtro desplegable para seleccionar una especie puntual.
+  - Usar el filtro desplegable para seleccionar una especie puntual. No aparecen todas las especies existentes (432 spp.)
 - **Búsqueda por dirección**:
   - Escribir parte de la dirección (por ejemplo “Av. Rivadavia 1000”).
 - **Limpiar búsqueda**:
@@ -144,7 +144,7 @@ const SUPABASE_ANON_KEY = '...';
   - La elección se guarda en `localStorage`.
 
 - **Vista del mapa**:
-  - Botón “🗺️ Vista clara / oscura” alterna entre base light (CartoDB Positron) y base dark (CartoDB Dark Matter).[web:214]
+  - Botón “🗺️ Vista clara / oscura” alterna entre base light (CartoDB Positron) y base dark (CartoDB Dark Matter).
 
 ---
 
@@ -167,7 +167,7 @@ Para más detalle ver [`docs/datos.md`](docs/datos.md).
 
 ## Seguridad y políticas (Supabase)
 
-- **RLS (Row Level Security)** habilitado en las tablas públicas.[web:215][web:223]  
+- **RLS (Row Level Security)** habilitado en las tablas públicas.
 - Políticas de solo lectura para el rol `anon`:
 
   - Acción `SELECT`: permitida para `anon`/`authenticated`.  
@@ -187,8 +187,11 @@ Esto asegura que:
 Pruebas realizadas:
 
 - **Desktop**  
-  - Navegador: Chrome (Linux/Windows).  
+  - Navegador: Chrome, Brave, Edge, Mozilla (Windows).  
   - Funciones probadas: clusters, heatmap, búsquedas, estadísticas, tema, cambio de base.
+
+  - **Laptop**  
+  - Navegador: Chrome, Brave, Edge, Mozilla (Windows).
 
 - **Android**  
   - Dispositivo: Motorola (Moto G / Nano 50).  
@@ -196,7 +199,7 @@ Pruebas realizadas:
 
 Pendiente (beta):
 
-- Laptop adicional (otro sistema / navegador).
+- Laptop adicional (Linux / navegador).
 - iPhone (Safari / Chrome).
 
 Se recomienda que quienes prueben la beta reporten problemas en resoluciones pequeñas o navegadores específicos.
@@ -208,7 +211,8 @@ Se recomienda que quienes prueben la beta reporten problemas en resoluciones peq
 - Filtros adicionales (por altura / diámetro / comuna). 
 - Inclusion del arbolado relevado en areas verdes, parques, plazas, jardines.  
 - Series temporales (si se incorporan nuevas campañas de relevamiento).  
-- Modo “historia” con recorridos guiados.  
+- Modo “historia” con recorridos guiados.
+- Añadir ficha técnica de cada especie con fotografías.
 - Descarga de subconjuntos de datos (CSV / GeoJSON) con filtros aplicados.
 
 ---

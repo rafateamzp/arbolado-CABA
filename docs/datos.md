@@ -44,7 +44,7 @@ En el mapa principal se utilizan principalmente: `lat`, `long`, `nombre_cie`, `n
 
 ## Datos agregados y funciones RPC
 
-Las estadísticas mostradas en `estadisticas.html` no se calculan en el navegador, sino mediante **funciones RPC** de Supabase que devuelven datos ya agregados.[web:215][web:164]
+Las estadísticas mostradas en `estadisticas.html` no se calculan en el navegador, sino mediante **funciones RPC** de Supabase que devuelven datos ya agregados.
 
 Las funciones principales son:
 
